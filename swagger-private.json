@@ -1,0 +1,67 @@
+{
+  "swagger" : "2.0",
+  "info" : {
+    "description" : "AirMarkets API's provide internal & external interactions with our drone safety platform.",
+    "version" : "1.0.0",
+    "title" : "AirMarkets Internal (Private) API"
+  },
+  "host" : "77p8ubq4lc.execute-api.us-east-1.amazonaws.com",
+  "basePath" : "/private",
+  "schemes" : [ "https" ],
+  "produces" : [ "application/json" ],
+  "paths" : {
+    "/flightpathmobile/firRegion" : {
+      "post" : {
+        "tags" : [ "firRegion" ],
+        "summary" : "FIR region contact",
+        "description" : "Get current FIR region’s contact.\n",
+        "parameters" : [ {
+          "name" : "latitude",
+          "in" : "query",
+          "description" : "latitude in decimal degrees.",
+          "required" : true,
+          "type" : "number",
+          "format" : "Text"
+        }, {
+          "name" : "longitude",
+          "in" : "query",
+          "description" : "longitude in decimal degrees.",
+          "required" : true,
+          "type" : "number",
+          "format" : "Text"
+        } ],
+        "responses" : {
+          "200" : {
+            "description" : "Get current FIR region’s contact",
+            "schema" : {
+              "$ref" : "#/definitions/Error"
+            }
+          },
+          "default" : {
+            "description" : "Unexpected error",
+            "schema" : {
+              "$ref" : "#/definitions/Error"
+            }
+          }
+        }
+      }
+    }
+  },
+  "definitions" : {
+    "Error" : {
+      "type" : "object",
+      "properties" : {
+        "code" : {
+          "type" : "integer",
+          "format" : "int32"
+        },
+        "message" : {
+          "type" : "string"
+        },
+        "fields" : {
+          "type" : "string"
+        }
+      }
+    }
+  }
+}

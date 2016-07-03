@@ -10,41 +10,84 @@
   "schemes" : [ "https" ],
   "produces" : [ "application/json" ],
   "paths" : {
-    "/flightpathmobile/getAirSpaceInfo" : {
+    "/flightpathmobile/accessUserLoc" : {
       "post" : {
-        "tags" : [ "getAirSpaceInfo" ],
-        "summary" : "Get Air Space Info",
-        "description" : "Retrieves the 2D airspace geometry for a point based on altitude.\n",
+        "tags" : [ "accessUserLoc" ],
+        "summary" : "Access user location",
+        "description" : "Gather comprehensive info using user’s location.\n",
         "parameters" : [ {
-          "name" : "Latitude",
+          "name" : "latitude",
           "in" : "query",
           "description" : "latitude in decimal degrees.",
           "required" : true,
           "type" : "number",
           "format" : "Text"
         }, {
-          "name" : "Longitude",
+          "name" : "longitude",
           "in" : "query",
           "description" : "longitude in decimal degrees.",
           "required" : true,
           "type" : "number",
           "format" : "Text"
         }, {
-          "name" : "Altitude",
+          "name" : "altitude",
+          "in" : "query",
+          "description" : "altitude in feet.",
+          "required" : true,
+          "type" : "number",
+          "format" : "Text"
+        } ],
+        "responses" : {
+          "200" : {
+            "description" : "Access user location",
+            "schema" : {
+              "$ref" : "#/definitions/Error"
+            }
+          },
+          "default" : {
+            "description" : "Unexpected error",
+            "schema" : {
+              "$ref" : "#/definitions/Error"
+            }
+          }
+        }
+      }
+    },
+    "/flightpathmobile/getAirSpaceInfo" : {
+      "post" : {
+        "tags" : [ "getAirSpaceInfo" ],
+        "summary" : "Get Air Space Info",
+        "description" : "Retrieves the 2D airspace geometry for a point based on altitude.\n",
+        "parameters" : [ {
+          "name" : "latitude",
+          "in" : "query",
+          "description" : "latitude in decimal degrees.",
+          "required" : true,
+          "type" : "number",
+          "format" : "Text"
+        }, {
+          "name" : "longitude",
+          "in" : "query",
+          "description" : "longitude in decimal degrees.",
+          "required" : true,
+          "type" : "number",
+          "format" : "Text"
+        }, {
+          "name" : "altitude",
           "in" : "query",
           "description" : "altitude above msl in metres.",
           "required" : true,
           "type" : "number",
           "format" : "Text"
         }, {
-          "name" : "Class",
+          "name" : "class",
           "in" : "query",
           "description" : "Airspace Class (B,C,D,E,F).",
           "required" : true,
           "type" : "string",
           "format" : "Text"
         }, {
-          "name" : "Radius",
+          "name" : "radius",
           "in" : "query",
           "description" : "radius in meters.",
           "required" : true,
@@ -73,21 +116,21 @@
         "summary" : "Get Closest Airport List",
         "description" : "Retrieves list of airports in distance order (closest first) from users location specified.\n",
         "parameters" : [ {
-          "name" : "Latitude",
+          "name" : "latitude",
           "in" : "query",
           "description" : "latitude in decimal degrees.",
           "required" : true,
           "type" : "number",
           "format" : "Text"
         }, {
-          "name" : "Longitude",
+          "name" : "longitude",
           "in" : "query",
           "description" : "longitude in decimal degrees.",
           "required" : true,
           "type" : "number",
           "format" : "Text"
         }, {
-          "name" : "Radius",
+          "name" : "radius",
           "in" : "query",
           "description" : "maximum distance from user metres.",
           "required" : true,
@@ -116,49 +159,49 @@
         "summary" : "Process Point",
         "description" : "This function will be used to evaluate the real-time streaming telemetry data feed supplied by the mobile app. This is the main function that provides the evaluation of each unique location dataset provided by the mobile app. This function will  be passed the dataset identified below and will evaluate the location for airspace intersections. This function will use the Geo DB to store the data, and then query it for intersections. The data will be stored permanently within the Geo DB for future reference. The SessionID will remain open until the “End Session” function has fired.\n",
         "parameters" : [ {
-          "name" : "DateTime",
+          "name" : "datetime",
           "in" : "query",
           "description" : "The date time when the telemetry data was captured from the drone.",
           "required" : true,
           "type" : "string",
           "format" : "DateTime"
         }, {
-          "name" : "SessionID",
+          "name" : "sessionid",
           "in" : "query",
           "description" : "The session ID number that was created for capturing & processing the data.",
           "required" : true,
           "type" : "string",
           "format" : "string"
         }, {
-          "name" : "Latitude",
+          "name" : "latitude",
           "in" : "query",
           "description" : "The latitude for the drone location.",
           "required" : true,
           "type" : "number",
           "format" : "Text"
         }, {
-          "name" : "Longitude",
+          "name" : "longitude",
           "in" : "query",
           "description" : "The longitude for the drone location.",
           "required" : true,
           "type" : "number",
           "format" : "Text"
         }, {
-          "name" : "Altitude",
+          "name" : "altitude",
           "in" : "query",
           "description" : "The altitude for the drone location.",
           "required" : true,
           "type" : "number",
           "format" : "Text"
         }, {
-          "name" : "GPSCount",
+          "name" : "gpscount",
           "in" : "query",
           "description" : "The number of GPS satellites that the drone has used to find its location.",
           "required" : true,
           "type" : "number",
           "format" : "Text"
         }, {
-          "name" : "HDOP",
+          "name" : "hdop",
           "in" : "query",
           "description" : "The satellite quality assessment value.",
           "required" : true,
@@ -181,98 +224,41 @@
         }
       }
     },
-    "/flightpathmobile/stopMission" : {
-      "post" : {
-        "tags" : [ "StopMission" ],
-        "summary" : "Stop Mission",
-        "description" : "This will stop a session that has been used for collecting and processing telemetry data. The function will close the buffer (log file, transaction) and process the complete session to produce a KML and CSV file which will be stored on the Joomla server. Use the existing workflow established for testing Yi’s demo page for now.This function will be used to close the session used to capture & process information.\n",
-        "parameters" : [ {
-          "name" : "DateStart",
-          "in" : "query",
-          "description" : "The date time when the capture session was started.",
-          "required" : true,
-          "type" : "string",
-          "format" : "DateTime"
-        }, {
-          "name" : "DateEnd",
-          "in" : "query",
-          "description" : "The date time when the capture session was completed.",
-          "required" : true,
-          "type" : "string",
-          "format" : "DateTime"
-        }, {
-          "name" : "Username",
-          "in" : "query",
-          "description" : "Associated Joomla username. Manually supplied from a user entered form.",
-          "required" : true,
-          "type" : "string",
-          "format" : "Text"
-        }, {
-          "name" : "FlightNumber",
-          "in" : "query",
-          "description" : "Associated mission number, which is manually supplied from a user entered form.",
-          "required" : true,
-          "type" : "string",
-          "format" : "Text"
-        }, {
-          "name" : "DroneSerialNumber",
-          "in" : "query",
-          "description" : "The unique identifier of the aircraft which is automatically pulled by the mobile app.",
-          "required" : true,
-          "type" : "string",
-          "format" : "Text"
-        } ],
-        "responses" : {
-          "200" : {
-            "description" : "Success (Boolean) - true/false which indicates if the session was successfully closed. SesssionID(Text) - returns the SessionID that was closed",
-            "schema" : {
-              "$ref" : "#/definitions/Error"
-            }
-          },
-          "default" : {
-            "description" : "Unexpected error",
-            "schema" : {
-              "$ref" : "#/definitions/Error"
-            }
-          }
-        }
-      }
-    },
-    "/startMission" : {
+    "/flightpathmobile/startMission" : {
       "post" : {
         "tags" : [ "StartMission" ],
         "summary" : "Start Mission",
         "description" : "This will start a session for collecting the data and processing. The function will create a buffer (log file, transaction) for feeding the “evaluated” telemetry data feed into. The “Evaluate Data” function will feed the results of its processing in the log file, which “Start Session” will instantiate.\n",
         "parameters" : [ {
-          "name" : "DateStart",
+          "name" : "datestart",
           "in" : "query",
           "description" : "The date time when the capture session was started.",
           "required" : true,
           "type" : "string",
           "format" : "DateTime"
         }, {
-          "name" : "DateEnd",
+          "name" : "dateend",
           "in" : "query",
           "description" : "The date time when the capture session was completed.",
           "required" : true,
           "type" : "string",
           "format" : "DateTime"
         }, {
-          "name" : "Username",
+          "name" : "username",
           "in" : "query",
           "description" : "Associated Joomla username. Manually supplied from a user entered form.",
           "required" : true,
           "type" : "string",
           "format" : "Text"
         }, {
-          "name" : "FlightNumber",
+          "name" : "flightnumber",
           "in" : "query",
           "description" : "Associated mission number, which is manually supplied from a user entered form.",
           "required" : true,
           "type" : "string",
           "format" : "Text"
         }, {
-          "name" : "DroneSerialNumber",
+          "name" : "droneserialnumber",
           "in" : "query",
           "description" : "The unique identifier of the aircraft which is automatically pulled by the mobile app.",
           "required" : true,
@@ -288,6 +274,63 @@
           },
           "default" : {
             "description" : "Mission exists or error params",
+            "schema" : {
+              "$ref" : "#/definitions/Error"
+            }
+          }
+        }
+      }
+    },
+    "/flightpathmobile/stopMission" : {
+      "post" : {
+        "tags" : [ "StopMission" ],
+        "summary" : "Stop Mission",
+        "description" : "This will stop a session that has been used for collecting and processing telemetry data. The function will close the buffer (log file, transaction) and process the complete session to produce a KML and CSV file which will be stored on the Joomla server. Use the existing workflow established for testing Yi’s demo page for now.This function will be used to close the session used to capture & process information.\n",
+        "parameters" : [ {
+          "name" : "datestart",
+          "in" : "query",
+          "description" : "The date time when the capture session was started.",
+          "required" : true,
+          "type" : "string",
+          "format" : "DateTime"
+        }, {
+          "name" : "dateend",
+          "in" : "query",
+          "description" : "The date time when the capture session was completed.",
+          "required" : true,
+          "type" : "string",
+          "format" : "DateTime"
+        }, {
+          "name" : "username",
+          "in" : "query",
+          "description" : "Associated Joomla username. Manually supplied from a user entered form.",
+          "required" : true,
+          "type" : "string",
+          "format" : "Text"
+        }, {
+          "name" : "flightnumber",
+          "in" : "query",
+          "description" : "Associated mission number, which is manually supplied from a user entered form.",
+          "required" : true,
+          "type" : "string",
+          "format" : "Text"
+        }, {
+          "name" : "droneserialnumber",
+          "in" : "query",
+          "description" : "The unique identifier of the aircraft which is automatically pulled by the mobile app.",
+          "required" : true,
+          "type" : "string",
+          "format" : "Text"
+        } ],
+        "responses" : {
+          "200" : {
+            "description" : "Success (Boolean) - true/false which indicates if the session was successfully closed. SesssionID(Text) - returns the SessionID that was closed",
+            "schema" : {
+              "$ref" : "#/definitions/Error"
+            }
+          },
+          "default" : {
+            "description" : "Unexpected error",
             "schema" : {
               "$ref" : "#/definitions/Error"
             }
